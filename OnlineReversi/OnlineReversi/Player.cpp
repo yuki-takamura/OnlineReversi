@@ -1,21 +1,18 @@
 #include <iostream>
+#include <string>
 #include "Player.h"
 
 using namespace std;
 
-void Player::update(Stone stone[VERTICAL][HORIZONTAL])
+void Player::update(Stone stone[VERTICAL][HORIZONTAL], char buffer[256])
 {
 	isPutStone = false;
-
-	cout << "‚ ‚È‚½(•)‚Ì”Ô‚Å‚·" << endl;
-	cout << "’u‚«‚½‚¢êŠ‚ð“ü—Í‚µ‚Ä‚­‚¾‚³‚¢" << endl;
-	cout << "—á : 1A@e5 (¬•¶Žš‘å•¶Žš‡”Ô‚Í‹C‚É‚µ‚È‚­‚Ä‚àOK)" << endl;
 
 	while (true)
 	{
 		inputString.clear();
 
-		input(stone);
+		input(stone, buffer);
 
 		putStone(stone);
 
@@ -24,11 +21,11 @@ void Player::update(Stone stone[VERTICAL][HORIZONTAL])
 	}
 }
 
-void Player::input(Stone stone[VERTICAL][HORIZONTAL])
+void Player::input(Stone stone[VERTICAL][HORIZONTAL], char buffer[256])
 {
 	while (true)
 	{
-		cin >> inputString;
+		inputString = buffer;
 
 		if (inputString.length() <= 1 || inputString.length() > MAX_STRING_NUM - 1)
 		{

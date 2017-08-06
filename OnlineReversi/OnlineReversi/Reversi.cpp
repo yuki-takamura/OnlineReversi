@@ -11,6 +11,9 @@ Reversi::Reversi(bool isVersion7)
 {
 	this->isVersion7 = isVersion7;
 	srand((unsigned)time(NULL));
+
+	player[0].myColor = Color::WHITE;
+	player[1].myColor = Color::BLACK;
 }
 
 void Reversi::run()
@@ -53,17 +56,15 @@ void Reversi::run()
 		switch (cpu)
 		{
 		case Server:
-			networkManager.InputSqN(&sqN);
+			networkManager.inputPort(&port);
 
-			networkManager.InputPort(&port);
-
-			if (networkManager.ServerStart(port, &soc))
+			if (networkManager.serverStart(port, &soc))
 			{
 				cout << "ソケット通信機能が正常に使用できなかったので通信は行いません\n";
 			}
 			else
 			{
-				message = networkManager.Encode(sqN);
+				message = networkManager.encode(sqN);
 
 				cout << message << "送信\n";//実際にどのような文字を送るのか確認
 				int sendBytes = send(soc, message.c_str(), message.length(), 0);
@@ -75,10 +76,10 @@ void Reversi::run()
 			break;
 
 		case Client:
-			networkManager.InputHost(&host);
-			networkManager.InputPort(&port);
+			networkManager.inputHost(&host);
+			networkManager.inputPort(&port);
 
-			if (networkManager.ClientStart(host, port, &soc))
+			if (networkManager.clientStart(host, port, &soc))
 			{
 				cout << "ソケット通信機能が正常に使用できなかったので通信は行いません\n";
 			}
@@ -98,9 +99,7 @@ void Reversi::run()
 
 					cout << rcv << "bytes 受信完了\n";
 
-					sqN = networkManager.Decode(receiveBuffer);
-
-					networkManager.Decode(receiveBuffer, sqN);
+					sqN = networkManager.decode(receiveBuffer);
 
 					isConnecting = true;
 				}
@@ -120,7 +119,7 @@ void Reversi::run()
 		switch (cpu)
 		{
 		case Server:
-			cout << "相手の番です";
+			cout << "相手(黒)の番です";
 			rcv = recv(soc, buffer, sizeof(buffer) - 1, 0);
 			if (rcv == SOCKET_ERROR)
 			{
@@ -128,34 +127,51 @@ void Reversi::run()
 				break;
 			}
 
-			//ここで描画
-			Reversi::draw();
-
 			buffer[rcv] = '\0';
+
+			if (player[1].checkEnd(stone))
+			{
+				canNotPut[1] = false;
+				player[1].update(stone, buffer);
+			}
+			else
+				canNotPut[1] = true;
+
+			Reversi::update();
+			Reversi::draw();
 
 			if (strcmp(buffer, "c_end") == 0)
 			{
 				cout << "クライアントが切断\n";
 				break;
 			}
-			cout << "受信 : " << buffer << '\n';
-			cout << "あなたの番です : ";
+			cout << "受信 : " << buffer << "に置かれました\n";
+			cout << "あなた(白)の番です : ";
 			cin >> buffer;
 			if (strcmp(buffer, "s_end") == 0)
 			{
 				send(soc, buffer, int(strlen(buffer)), 0);
 				break;
 			}
+
 			//置けるかどうかの判定処理
+			if (player[0].checkEnd(stone))
+			{
+				canNotPut[0] = false;
+				player[0].update(stone, buffer);
+			}
+			else
+				canNotPut[0] = true;
+
 			send(soc, buffer, int(strlen(buffer)), 0);
 			
-			//描画
+			Reversi::update();
 			Reversi::draw();
 			break;
 
 		case Client:
 			
-			cout << "あなたの番です : ";
+			cout << "あなた(黒)の番です : ";
 			cin >> buffer;
 			if (strcmp(buffer, "c_end") == 0)
 			{
@@ -164,13 +180,20 @@ void Reversi::run()
 			}
 
 			//置けるかどうかの判定
+			if (player[1].checkEnd(stone))
+			{
+				canNotPut[1] = false;
+				player[1].update(stone, buffer);
+			}
+			else
+				canNotPut[1] = true;
 
 			send(soc, buffer, (int)strlen(buffer), 0);
 
-			//ここで描画
+			Reversi::update();
 			Reversi::draw();
 
-			cout << "相手の番です\n";
+			cout << "相手(白)の番です\n";
 			rcv = recv(soc, buffer, sizeof(buffer) - 1, 0);
 			if (rcv == SOCKET_ERROR)
 			{
@@ -178,17 +201,25 @@ void Reversi::run()
 				break;
 			}
 
-			//ここで描画
-			Reversi::draw();
-
 			buffer[rcv] = '\0';
+
+			if (player[0].checkEnd(stone))
+			{
+				canNotPut[0] = false;
+				player[0].update(stone, buffer);
+			}
+			else
+				canNotPut[0] = true;
+
+			Reversi::update();
+			Reversi::draw();
 
 			if (strcmp(buffer, "s_end") == 0)
 			{
 				cout << "サーバーが切断\n";
 				break;
 			}
-			cout << "受信 : " << buffer << '\n';
+			cout << "受信 : " << buffer << "に置かれました\n";
 			break;
 		default:
 			break;
@@ -201,16 +232,7 @@ void Reversi::run()
 		}
 	}
 
-	networkManager.SocketEnd(&soc);
-
-	while (true)
-	{
-		Reversi::update();
-
-		Reversi::draw();
-
-
-	}
+	networkManager.socketEnd(&soc);
 }
 
 void Reversi::initialize()
@@ -257,26 +279,6 @@ void Reversi::initialize()
 
 void Reversi::update()
 {
-	cout << endl;
-
-	if (player.checkEnd(stone))
-	{
-		canNotPut[0] = false;
-		player.update(stone);
-	}
-	else
-		canNotPut[0] = true;
-
-	draw();
-
-	if (enemy.checkEnd(stone))
-	{
-		canNotPut[1] = false;
-		enemy.update(stone);
-	}
-	else
-		canNotPut[1] = true;
-
 	//描画更新
 	system("cls");
 
@@ -299,7 +301,7 @@ void Reversi::update()
 		}
 		else if (stoneCounter[0] < stoneCounter[1])
 		{
-			cout << "コンピュータの勝ちです" << endl;
+			cout << "相手の勝ちです" << endl;
 		}
 		else
 		{
@@ -307,7 +309,6 @@ void Reversi::update()
 		}
 		cout << "くろ : " << stoneCounter[0] << "個" << endl;
 		cout << "しろ : " << stoneCounter[1] << "個" << endl;
-
 	}
 }
 

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int NetworkManager::ServerStart(unsigned short portNum, SOCKET* soc)
+int NetworkManager::serverStart(unsigned short portNum, SOCKET* soc)
 {
 	WSADATA wsaData;
 	SOCKET listenSoc;
@@ -69,7 +69,7 @@ int NetworkManager::ServerStart(unsigned short portNum, SOCKET* soc)
 	return 0;
 }
 
-int NetworkManager::ClientStart(string serverName, unsigned short portNum, SOCKET* soc)
+int NetworkManager::clientStart(string serverName, unsigned short portNum, SOCKET* soc)
 {
 	WSADATA wsaData;
 	HOSTENT* host;
@@ -122,7 +122,7 @@ int NetworkManager::ClientStart(string serverName, unsigned short portNum, SOCKE
 	return 0;
 }
 
-int NetworkManager::SocketEnd(SOCKET* soc)
+int NetworkManager::socketEnd(SOCKET* soc)
 {
 	if (*soc < 0)
 	{
@@ -145,25 +145,7 @@ int NetworkManager::SocketEnd(SOCKET* soc)
 	return 0;
 }
 
-void NetworkManager::InputSqN(int* sqN)
-{
-	const int sqNMax = 80;
-	string buffer;
-
-	while (!(*sqN))
-	{
-		cout << "—v‘f”‚ð“ü—Í‚µ‚Ä‚­‚¾‚³‚¢>";
-		getline(cin, buffer);
-		*sqN = atoi(buffer.c_str());
-		if (*sqN <= 0 || *sqN > sqNMax)
-		{
-			cout << "—v‘f”‚Í‚P`" << sqNMax << "‚Ì”ÍˆÍ‚É‚µ‚Ä‚­‚¾‚³‚¢\n\n";
-			*sqN = 0;
-		}
-	}
-}
-
-void NetworkManager::InputHost(string* host)
+void NetworkManager::inputHost(string* host)
 {
 	cout << "ƒzƒXƒg–¼‚Ü‚½‚ÍIPƒAƒhƒŒƒX‚ð“ü—Í‚µ‚Ä‚­‚¾‚³‚¢ > ";
 	getline(cin, *host);
@@ -174,7 +156,7 @@ void NetworkManager::InputHost(string* host)
 	}
 }
 
-void NetworkManager::InputPort(unsigned short* port)
+void NetworkManager::inputPort(unsigned short* port)
 {
 	const unsigned short privatePortL = 49152;
 	const unsigned short privatePortU = 65535;
@@ -203,7 +185,7 @@ void NetworkManager::InputPort(unsigned short* port)
 	}
 }
 
-string NetworkManager::Encode(int sqN)
+string NetworkManager::encode(int sqN)
 {
 	stringstream text;
 
@@ -217,7 +199,7 @@ string NetworkManager::Encode(int sqN)
 	return text.str();
 }
 
-int NetworkManager::Decode(char* receiveData)
+int NetworkManager::decode(char* receiveData)
 {
 	char numChar[3];
 
@@ -226,16 +208,4 @@ int NetworkManager::Decode(char* receiveData)
 	numChar[2] = '\0';
 
 	return atoi(numChar);
-}
-
-void NetworkManager::Decode(char* receiveData, int sqN)
-{
-	for (int i = 0; i < sqN; i++)
-	{
-		switch (receiveData[2 + i] - '0')
-		{
-		default :
-			break;
-		}
-	}
 }

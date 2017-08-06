@@ -19,17 +19,15 @@ enum CPUType
 class NetworkManager
 {
 public :
-	int ServerStart(unsigned short portNum, SOCKET* soc);
-	int ClientStart(std::string serverName, unsigned short portNum, SOCKET* soc);
-	int SocketEnd(SOCKET* soc);
+	int serverStart(unsigned short portNum, SOCKET* soc);
+	int clientStart(std::string serverName, unsigned short portNum, SOCKET* soc);
+	int socketEnd(SOCKET* soc);
 
-	void InputSqN(int* sqN);
-	void InputHost(std::string* host);
-	void InputPort(unsigned short* port);
+	void inputHost(std::string* host);
+	void inputPort(unsigned short* port);
 
-	std::string Encode(int sqN);
-	int Decode(char* receiveData);
-	void Decode(char* receiveData, int sqN);
+	std::string encode(int sqN);
+	int decode(char* receiveData);
 };
 
 #endif

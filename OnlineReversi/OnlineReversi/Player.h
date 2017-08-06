@@ -9,12 +9,12 @@ class Player: public PlayerObject
 {
 public :
 	Player(): PlayerObject(true) { }
-	void update(Stone stone[VERTICAL][HORIZONTAL]);
+	void update(Stone stone[VERTICAL][HORIZONTAL], char buffer[256]);
 
 private:
 	std :: string inputString;
 
-	void input(Stone stone[VERTICAL][HORIZONTAL]);
+	void input(Stone stone[VERTICAL][HORIZONTAL], char buffer[256]);
 	void convertInput();
 	bool isInRange();
 

@@ -13,11 +13,11 @@ struct Place
 class PlayerObject
 {
 private:
-	Color myColor;
 
 public:
+	Color myColor;
 	PlayerObject(bool isTurnFirst);
-	void virtual update(Stone stone[VERTICAL][HORIZONTAL]);
+	void virtual update(Stone stone[VERTICAL][HORIZONTAL], char buffer[256]);
 	bool checkEnd(Stone stone[VERTICAL][HORIZONTAL]);
 
 protected :

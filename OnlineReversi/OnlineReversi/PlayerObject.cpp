@@ -10,7 +10,7 @@ PlayerObject::PlayerObject(bool isTurnFirst)
 	myColor = isTurnFirst ? Color::BLACK : Color::WHITE;
 }
 
-void PlayerObject :: update(Stone stone[VERTICAL][HORIZONTAL])
+void PlayerObject :: update(Stone stone[VERTICAL][HORIZONTAL], char buffer[256])
 {
 	return;
 }

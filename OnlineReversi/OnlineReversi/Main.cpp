@@ -30,9 +30,3 @@ int __cdecl wmain(__in int argc, __in_ecount(argc) PCWSTR argv[])
 
 	return 0;
 }
-
-//éQçl
-//http://tech2assist.web.fc2.com/wabisabi/cpp/cpp014.html
-//http://inemaru.hatenablog.com/entry/2015/09/23/002412
-//https://msdn.microsoft.com/en-us/library/ms724429(v=vs.85).aspx
-//http://www.kumei.ne.jp/c_lang/intro/no_58.htm

@@ -34,7 +34,7 @@ private:
 	Guide guide;
 	Board board;
 	Stone stone[VERTICAL][HORIZONTAL];
-	Player player;
+	Player player[2];
 	Enemy enemy;
 
 	NetworkManager networkManager;
