@@ -1,6 +1,7 @@
 #ifndef ___Class_Reversi
 #define ___Class_Reversi
 
+#include "NetworkManager.h"
 #include "DrawObject.h"
 #include "Board.h"
 #include "Stone.h"
@@ -20,6 +21,8 @@ public:
 	Reversi(bool);
 	void run();
 
+	CPUType cpu = Other;
+
 private:
 	///<summary>
 	///windows‚ª7ˆÈ‘O‚©‚Ç‚¤‚©
@@ -33,6 +36,8 @@ private:
 	Stone stone[VERTICAL][HORIZONTAL];
 	Player player;
 	Enemy enemy;
+
+	NetworkManager networkManager;
 
 	TurnState currentTurn;
 

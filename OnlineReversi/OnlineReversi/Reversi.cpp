@@ -1,3 +1,4 @@
+#include "NetworkManager.h"
 #include <iostream>
 #include <time.h>
 #include <random>
@@ -14,8 +15,193 @@ Reversi::Reversi(bool isVersion7)
 
 void Reversi::run()
 {
+	int sqN = 0;
+
+	string inputBuffer;
+
+	string message;
+	char buffer[256];
+	char receiveBuffer[256];
+
+	string host;
+	unsigned short port = 0;
+	SOCKET soc;
+	int rcv;
+
+	bool isConnecting = false;
+
+	//設定
+	while (cpu == Other)
+	{
+		cout << "1:server 2:client\n";
+		getline(cin, inputBuffer);
+		switch (atoi(inputBuffer.c_str()))
+		{
+		case 1:
+			cpu = Server;
+			break;
+		case 2:
+			cpu = Client;
+			break;
+		default:
+			cout << "1 or 2 を入力せよ\n";
+		}
+	}
+
+	//接続
+	while (!isConnecting) {
+		switch (cpu)
+		{
+		case Server:
+			networkManager.InputSqN(&sqN);
+
+			networkManager.InputPort(&port);
+
+			if (networkManager.ServerStart(port, &soc))
+			{
+				cout << "ソケット通信機能が正常に使用できなかったので通信は行いません\n";
+			}
+			else
+			{
+				message = networkManager.Encode(sqN);
+
+				cout << message << "送信\n";//実際にどのような文字を送るのか確認
+				int sendBytes = send(soc, message.c_str(), message.length(), 0);
+
+				cout << sendBytes << "bytes　送信完了\n";
+
+				isConnecting = true;
+			}
+			break;
+
+		case Client:
+			networkManager.InputHost(&host);
+			networkManager.InputPort(&port);
+
+			if (networkManager.ClientStart(host, port, &soc))
+			{
+				cout << "ソケット通信機能が正常に使用できなかったので通信は行いません\n";
+			}
+			else
+			{
+				cout << "受信待ち\n";
+				rcv = recv(soc, receiveBuffer, sizeof(receiveBuffer) - 1, 0);
+
+				if (rcv == SOCKET_ERROR)
+				{
+					cout << "受信出来ませんでした\n";
+				}
+				else
+				{
+					receiveBuffer[rcv] = '\0';
+					cout << "受信\n"; //実際にどのような文字を受信したか確認
+
+					cout << rcv << "bytes 受信完了\n";
+
+					sqN = networkManager.Decode(receiveBuffer);
+
+					networkManager.Decode(receiveBuffer, sqN);
+
+					isConnecting = true;
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
 	Reversi::initialize();
 	Reversi::draw();
+
+	//実行
+	while (true)
+	{
+		switch (cpu)
+		{
+		case Server:
+			cout << "相手の番です";
+			rcv = recv(soc, buffer, sizeof(buffer) - 1, 0);
+			if (rcv == SOCKET_ERROR)
+			{
+				cout << "error";
+				break;
+			}
+
+			//ここで描画
+			Reversi::draw();
+
+			buffer[rcv] = '\0';
+
+			if (strcmp(buffer, "c_end") == 0)
+			{
+				cout << "クライアントが切断\n";
+				break;
+			}
+			cout << "受信 : " << buffer << '\n';
+			cout << "あなたの番です : ";
+			cin >> buffer;
+			if (strcmp(buffer, "s_end") == 0)
+			{
+				send(soc, buffer, int(strlen(buffer)), 0);
+				break;
+			}
+			//置けるかどうかの判定処理
+			send(soc, buffer, int(strlen(buffer)), 0);
+			
+			//描画
+			Reversi::draw();
+			break;
+
+		case Client:
+			
+			cout << "あなたの番です : ";
+			cin >> buffer;
+			if (strcmp(buffer, "c_end") == 0)
+			{
+				send(soc, buffer, (int)strlen(buffer), 0);
+				break;
+			}
+
+			//置けるかどうかの判定
+
+			send(soc, buffer, (int)strlen(buffer), 0);
+
+			//ここで描画
+			Reversi::draw();
+
+			cout << "相手の番です\n";
+			rcv = recv(soc, buffer, sizeof(buffer) - 1, 0);
+			if (rcv == SOCKET_ERROR)
+			{
+				cout << "error\n";
+				break;
+			}
+
+			//ここで描画
+			Reversi::draw();
+
+			buffer[rcv] = '\0';
+
+			if (strcmp(buffer, "s_end") == 0)
+			{
+				cout << "サーバーが切断\n";
+				break;
+			}
+			cout << "受信 : " << buffer << '\n';
+			break;
+		default:
+			break;
+		}
+
+		if (canNotPut[0] && canNotPut[1])
+		{
+			cout << "終了します" << endl;
+			break;
+		}
+	}
+
+	networkManager.SocketEnd(&soc);
 
 	while (true)
 	{
@@ -23,11 +209,7 @@ void Reversi::run()
 
 		Reversi::draw();
 
-		if (canNotPut[0] && canNotPut[1])
-		{
-			cout << "終了します" << endl;
-			break;
-		}
+
 	}
 }
 

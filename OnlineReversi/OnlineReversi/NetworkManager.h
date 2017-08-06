@@ -23,9 +23,6 @@ public :
 	int ClientStart(std::string serverName, unsigned short portNum, SOCKET* soc);
 	int SocketEnd(SOCKET* soc);
 
-	void MakeMap(int sqN);
-	void DrawMap(int sqN);
-
 	void InputSqN(int* sqN);
 	void InputHost(std::string* host);
 	void InputPort(unsigned short* port);

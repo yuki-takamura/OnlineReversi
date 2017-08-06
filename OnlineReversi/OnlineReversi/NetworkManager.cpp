@@ -145,29 +145,6 @@ int NetworkManager::SocketEnd(SOCKET* soc)
 	return 0;
 }
 
-void NetworkManager::MakeMap(int sqN)
-{
-	srand((unsigned int)time(NULL));
-	for (int i = 0; i < sqN; i++)
-	{
-		int type = rand() % 3;
-		switch (type)
-		{
-		default:
-			break;
-		}
-	}
-}
-
-void NetworkManager::DrawMap(int sqN)
-{
-	for (int i = 0; i < sqN; i++)
-	{
-		cout << "a";
-	}
-	cout << '\n';
-}
-
 void NetworkManager::InputSqN(int* sqN)
 {
 	const int sqNMax = 80;
