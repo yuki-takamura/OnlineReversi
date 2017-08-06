@@ -1,6 +1,8 @@
 #ifndef ___Class_NetworkManager
 #define ___Class_NetworkManager
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -30,7 +32,7 @@ public :
 	void DrawMap(SquareType* map, int sqN);
 
 	void InputSqN(int* sqN);
-	void InputHost(std::string host);
+	void InputHost(std::string* host);
 	void InputPort(unsigned short* port);
 
 	std::string Encode(SquareType* map, int sqN);

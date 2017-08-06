@@ -1,4 +1,5 @@
 #include "NetworkManager.h"
+#include <string>
 
 using namespace std;
 
@@ -144,7 +145,7 @@ int NetworkManager::SocketEnd(SOCKET* soc)
 	return 0;
 }
 
-void MakeMap(SquareType* map, int sqN)
+void NetworkManager::MakeMap(SquareType* map, int sqN)
 {
 	srand((unsigned int)time(NULL));
 	for (int i = 0; i < sqN; i++)
@@ -167,7 +168,7 @@ void MakeMap(SquareType* map, int sqN)
 	}
 }
 
-void DrawMap(SquareType* map, int sqN)
+void NetworkManager::DrawMap(SquareType* map, int sqN)
 {
 	for (int i = 0; i < sqN; i++)
 	{
@@ -188,4 +189,109 @@ void DrawMap(SquareType* map, int sqN)
 		}
 	}
 	cout << '\n';
+}
+
+void NetworkManager::InputSqN(int* sqN)
+{
+	const int sqNMax = 80;
+	string buffer;
+
+	while (!(*sqN))
+	{
+		cout << "要素数を入力してください>";
+		getline(cin, buffer);
+		*sqN = atoi(buffer.c_str());
+		if (*sqN <= 0 || *sqN > sqNMax)
+		{
+			cout << "要素数は１～" << sqNMax << "の範囲にしてください\n\n";
+			*sqN = 0;
+		}
+	}
+}
+
+void NetworkManager::InputHost(string* host)
+{
+	cout << "ホスト名またはIPアドレスを入力してください > ";
+	getline(cin, *host);
+	if (*host == "")
+	{
+		cout << "ローカルマシンのアドレスを使用します\n";
+		*host = "127.0.0.1";
+	}
+}
+
+void NetworkManager::InputPort(unsigned short* port)
+{
+	const unsigned short privatePortL = 49152;
+	const unsigned short privatePortU = 65535;
+	const unsigned short defaultPort = 55555;
+	string buffer;
+
+	while (!(*port))
+	{
+		cout << "ポート番号(" << privatePortL << "~" << privatePortU << ")を入力してください > ";
+		getline(cin, buffer);
+		if (buffer == "")
+		{
+			cout << "デフォルト値：" << defaultPort << "を使用します\n";
+			*port = defaultPort;
+		}
+		else
+		{
+			*port = atoi(buffer.c_str());
+			if (*port < privatePortL || *port> privatePortU)
+			{
+				cout << "ポート番号は" << privatePortL << "~" << privatePortU << "の範囲にしてください\n\n";
+
+				*port = 0;
+			}
+		}
+	}
+}
+
+string NetworkManager::Encode(SquareType* map, int sqN)
+{
+	stringstream text;
+
+	text.fill('0');
+	text << setw(2) << showbase << sqN;
+	for (int i = 0; i < sqN; i++)
+	{
+		text << map[i];
+	}
+
+	return text.str();
+}
+
+int NetworkManager::Decode(char* receiveData)
+{
+	char numChar[3];
+
+	numChar[0] = receiveData[0];
+	numChar[1] = receiveData[1];
+	numChar[2] = '\0';
+
+	return atoi(numChar);
+}
+
+void NetworkManager::Decode(char* receiveData, SquareType* map, int sqN)
+{
+	for (int i = 0; i < sqN; i++)
+	{
+		switch (receiveData[2 + i] - '0')
+		{
+		case Normal:
+			map[i] = Normal;
+			break;
+		case Forward:
+			map[i] = Forward;
+			break;
+		case Back:
+			map[i] = Back;
+			break;
+		case Pass:
+			map[i] = Pass;
+			break;
+		}
+	}
 }
