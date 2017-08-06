@@ -145,7 +145,7 @@ int NetworkManager::SocketEnd(SOCKET* soc)
 	return 0;
 }
 
-void NetworkManager::MakeMap(SquareType* map, int sqN)
+void NetworkManager::MakeMap(int sqN)
 {
 	srand((unsigned int)time(NULL));
 	for (int i = 0; i < sqN; i++)
@@ -153,40 +153,17 @@ void NetworkManager::MakeMap(SquareType* map, int sqN)
 		int type = rand() % 3;
 		switch (type)
 		{
-		case 0:
-			map[i] = Normal;
-			break;
-		case 1:
-			map[i] = Forward;
-		case 2:
-			map[i] = Back;
-			break;
 		default:
-			map[i] = Pass;
 			break;
 		}
 	}
 }
 
-void NetworkManager::DrawMap(SquareType* map, int sqN)
+void NetworkManager::DrawMap(int sqN)
 {
 	for (int i = 0; i < sqN; i++)
 	{
-		switch (map[i])
-		{
-		case Normal:
-			cout << '.';
-			break;
-		case Forward:
-			cout << '+';
-			break;
-		case Back:
-			cout << '-';
-			break;
-		case Pass:
-			cout << 'p';
-			break;
-		}
+		cout << "a";
 	}
 	cout << '\n';
 }
@@ -249,7 +226,7 @@ void NetworkManager::InputPort(unsigned short* port)
 	}
 }
 
-string NetworkManager::Encode(SquareType* map, int sqN)
+string NetworkManager::Encode(int sqN)
 {
 	stringstream text;
 
@@ -257,7 +234,7 @@ string NetworkManager::Encode(SquareType* map, int sqN)
 	text << setw(2) << showbase << sqN;
 	for (int i = 0; i < sqN; i++)
 	{
-		text << map[i];
+		text << "a";
 	}
 
 	return text.str();
@@ -274,23 +251,13 @@ int NetworkManager::Decode(char* receiveData)
 	return atoi(numChar);
 }
 
-void NetworkManager::Decode(char* receiveData, SquareType* map, int sqN)
+void NetworkManager::Decode(char* receiveData, int sqN)
 {
 	for (int i = 0; i < sqN; i++)
 	{
 		switch (receiveData[2 + i] - '0')
 		{
-		case Normal:
-			map[i] = Normal;
-			break;
-		case Forward:
-			map[i] = Forward;
-			break;
-		case Back:
-			map[i] = Back;
-			break;
-		case Pass:
-			map[i] = Pass;
+		default :
 			break;
 		}
 	}

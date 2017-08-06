@@ -148,11 +148,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Board.cpp" />
+    <ClCompile Include="DrawObject.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Guide.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerObject.cpp" />
+    <ClCompile Include="Reversi.cpp" />
+    <ClCompile Include="Stone.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Board.h" />
+    <ClInclude Include="ConstantMacro.h" />
+    <ClInclude Include="DrawObject.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Guide.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerObject.h" />
+    <ClInclude Include="Reversi.h" />
+    <ClInclude Include="Stone.h" />
     <ClInclude Include="NetworkManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
